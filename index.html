@@ -1,140 +1,48 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>🎮vijay learnings</title>
-    <style>
-    	* { padding: 0; margin: 0; }
-    	canvas { background: #eee; display: block; margin: 0 auto; }
-    </style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+p {
+  text-align: center;
+  font-size: 60px;
+  margin-top: 0px;
+}
+</style>
 </head>
 <body>
 
-<canvas id="myCanvas" width="480" height="320"></canvas>
+<p id="demo"></p>
 
 <script>
-	var canvas = document.getElementById("myCanvas");
-var ctx = canvas.getContext("2d");
-var x = canvas.width/2;
-var y = canvas.height - 30;
-var ballRadius = 10;
-var dx = 2;
-var dy = -2;
-var paddleHeight = 20;
-var paddleWidth = 100;
-var paddleX = (canvas.width-paddleWidth)/2;
-var paddleMovement = 70;
+// Set the date we're counting down to
+var countDownDate = new Date("Dec 5, 2024 15:37:25").getTime();
 
-// Brick
+// Update the count down every 1 second
+var x = setInterval(function() {
 
-var brickRowCount = 5;
-var brickColumnCount = 10;
-var brickWidth = 75;
-var brickHeight = 20;
-var brickPadding = 10;
-var brickOffsetTop = 30;
-var brickOffsetLeft = 30;
-var bricks = [];
-for(var c=0; c<brickColumnCount; c++) {
-  bricks[c] = [];
-  for(var r=0; r<brickRowCount; r++) {
-    bricks[c][r] = {x: 0, y: 0, status: true}
+  // Get today's date and time
+  var now = new Date().getTime();
+    
+  // Find the distance between now and the count down date
+  var distance = countDownDate - now;
+    
+  // Time calculations for days, hours, minutes and seconds
+  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    
+  // Output the result in an element with id="demo"
+  document.getElementById("demo").innerHTML = days + "d " + hours + "h "
+  + minutes + "m " + seconds + "s ";
+    
+  // If the count down is over, write some text 
+  if (distance < 0) {
+    clearInterval(x);
+    document.getElementById("demo").innerHTML = "EXPIRED";
   }
-}
-
-
-document.addEventListener("keydown", keyDownHandler, false);
-function DrawBall() {
-  ctx.clearRect(0,0,canvas.width, canvas.height)
-  ctx.beginPath();
-  ctx.arc(x,y,ballRadius,0, 2 * Math.PI);
-  ctx.fillStyle = "#0095DD";
-  ctx.fill();
-  ctx.closePath();
-  x= x+ dx;
-  y= y+ dy;
-  if(x > canvas.width-ballRadius || x - ballRadius < 0){
-    dx= -dx;
-  }
-  if(y + dy < ballRadius) {
-    dy = -dy;
-  } else if(y + dy + paddleHeight > canvas.height- ballRadius) {
-    if(x > paddleX && x + 2 < paddleX + paddleWidth) {
-      dy = -dy;
-    }
-    else {
-      alert('Game Over')
-      document.location.reload();
-      clearInterval(interval);
-    }
-  }
-}
-function DrawPaddle(){
-  ctx.beginPath();
-  ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-  ctx.fillStyle = "#0095DD";
-  ctx.fill();
-  ctx.closePath();
-}
-function Draw(){
-  ctx.canvas.width  = window.innerWidth;
-  ctx.canvas.height = window.innerHeight;
-  DrawBall();
-  DrawPaddle();
-  checkCollision();
-  drawBricks();
-}
-function checkCollision(){
-  for(var c=0; c<brickColumnCount; c++) {
-    for(var r=0; r<brickRowCount; r++) {
-      b = bricks[c][r];
-      if(b.status && x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
-        dy = -dy;
-        b.status = false;
-      }
-    }
-  }
-}
-function keyDownHandler(e) {
-  if(e.key == "Right" || e.key == "ArrowRight") {
-    rightPressed();
-  }
-  else if(e.key == "Left" || e.key == "ArrowLeft") {
-    leftPressed();
-  }
-}
-function leftPressed(){
-  paddleX = paddleX - paddleMovement;
-  if(paddleX < 0){
-    paddleX= 0;
-  }
-}
-function rightPressed(){
-  paddleX = paddleX + paddleMovement;
-  if(paddleX + paddleWidth > canvas.width){
-    paddleX = canvas.width - paddleWidth;
-  }
-}
-
-function drawBricks() {
-  for(var c=0; c<brickColumnCount; c++) {
-    for(var r=0; r<brickRowCount; r++) {
-      var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
-      var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
-      bricks[c][r].x = brickX;
-      bricks[c][r].y = brickY;
-      if(bricks[c][r].status){
-        ctx.beginPath();
-        ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = "#0095DD";
-        ctx.fill();
-        ctx.closePath();
-      }
-    }
-  }
-}
-const interval = setInterval(Draw,10);
-
+}, 1000);
 </script>
 
 </body>
